@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Dtos\**" />
+    <Compile Remove="wwwroot\files\**" />
+    <Content Remove="Dtos\**" />
+    <Content Remove="wwwroot\files\**" />
+    <EmbeddedResource Remove="Dtos\**" />
+    <EmbeddedResource Remove="wwwroot\files\**" />
+    <None Remove="Dtos\**" />
+    <None Remove="wwwroot\files\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.33">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\files\LicenseId\" />
+    <Folder Include="wwwroot\files\DriverNationalId\" />
+    <Folder Include="wwwroot\files\DriverNationalId\" />
+    <Folder Include="wwwroot\files\LicenseId\" />
+    <Folder Include="wwwroot\files\VehiclePicture\" />
+    <Folder Include="wwwroot\files\VehicleLicenseId\" />
+    <Folder Include="wwwroot\files\ProfilePicture\" />
+    <Folder Include="wwwroot\files\VehiclePicture\" />
+    <Folder Include="wwwroot\files\ProfilePicture\" />
+    <Folder Include="wwwroot\files\VehicleLicenseId\" />
+  </ItemGroup>
+
+</Project>
