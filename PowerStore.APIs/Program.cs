@@ -11,24 +11,13 @@ using PowerStore.APIs.Middlewares;
 using PowerStore.Core.Contract;
 using PowerStore.Core.Contract.Errors;
 using PowerStore.Core.Contract.IdentityInterface;
-using PowerStore.Core.Contract.Passenger_Contract;
-using PowerStore.Core.Contract.RideService_Contract;
-using PowerStore.Core.Contract.VehicleService_Contract;
 using PowerStore.Core.Entities;
 using PowerStore.Infrastructer.Data;
 using PowerStore.Infrastructer.Data.Context;
 using PowerStore.Infrastructer.Identity.DataSeed;
 using PowerStore.Infrastructer.Repositories;
-using PowerStore.Infrastructer.Repositories.DriverRepository;
-using PowerStore.Infrastructer.Repositories.Passenger_Repository;
-using PowerStore.Infrastructer.Repositories.Ride_Repository;
-using PowerStore.Service._RideService;
 using PowerStore.Service.Identity;
-using PowerStore.Service.LocationService;
-using PowerStore.Service.Mappers;
-using PowerStore.Service.Nearby_Driver_Service;
-using PowerStore.Service.VehicleModelService;
-using PowerStore.Service.VehicleService;
+
 using PowerStore.Service.VehicleTypeService;
 using StackExchange.Redis;
 using System.Text;
@@ -155,24 +144,9 @@ namespace PowerStore.APIs
 
             builder.Services.AddScoped<ITokenService, TokenServices>();
             builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IPassengerService, PassengerService>();
-            builder.Services.AddScoped<ILocationService, LocationService>();
             builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfwork));
-            builder.Services.AddAutoMapper(typeof(DriverMapper));
-            builder.Services.AddAutoMapper(typeof(PassengerMapper));
             builder.Services.AddScoped(typeof(IGenaricRepositoy<>), typeof(GenaricRepository<>));
-            builder.Services.AddScoped<IDriverService, DriverService>();
-            builder.Services.AddScoped(typeof(IRideRepository), typeof(RideRepository));
-            builder.Services.AddScoped(typeof(IRideService), typeof(RideService));
             builder.Services.AddScoped<IVehicleTypeService, VehicleTypeService>();
-            builder.Services.AddScoped<IVehicleModelService, VehicleModelService>();
-            builder.Services.AddSingleton(typeof(IUpdateDriverLocationService), typeof(UpdateDriverLocationService));
-            builder.Services.AddScoped(typeof(INearbyDriverService), typeof(NearbyDriversService));
-            builder.Services.AddScoped(typeof(IRideAcceptanceService), typeof(RideAcceptanceService));
-            builder.Services.AddScoped(typeof(IVehicleService), typeof(VehicleService));
-            builder.Services.AddScoped<PassengerMapper>();
-            builder.Services.AddScoped<DriverMapper>();
-            builder.Services.AddScoped<VehicleMapper>();
 
 
             #endregion
@@ -217,9 +191,6 @@ namespace PowerStore.APIs
 
             app.UseStaticFiles();
             app.MapHub<ChatHub>("/ChatHub");
-            app.MapHub<RideHub>("/RideRequestHub");
-            app.MapHub<RideRequestHub>("/notifyNearbyDrivers");
-            app.MapHub<LocationHub>("/locationhub");
             app.MapControllers();
 
             #endregion

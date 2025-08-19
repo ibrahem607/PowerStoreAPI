@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="_RideService\RideRequsetService\" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.58" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
+    <ProjectReference Include="..\PowerStore.Infrastructer\PowerStore.Infrastructer.csproj" />
   </ItemGroup>
 
 </Project>

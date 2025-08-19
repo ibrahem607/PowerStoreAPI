@@ -9,6 +9,6 @@ namespace PowerStore.Service.VehicleTypeService
 {
     public interface IVehicleTypeService
     {
-        Task<IEnumerable<VehicleType>> GetVehicleTypesByCategoryIdAsync(int categoryId);
+      //  Task<IEnumerable<VehicleType>> GetVehicleTypesByCategoryIdAsync(int categoryId);
     }
 }

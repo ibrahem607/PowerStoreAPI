@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PowerStore.Core.Contract.CategoryOfVehicleInterface
 {
-    public interface ICategoryOfVehicleRepository : IGenaricRepositoy<CategoryOfVehicle>
+    public interface ICategoryOfVehicleRepository : IGenaricRepositoy<Category>
     {
     }
 }

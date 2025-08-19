@@ -1,5 +1,4 @@
-﻿using PowerStore.Core.Contract.RideService_Contract;
-using PowerStore.Core.Entities;
+﻿using PowerStore.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,6 @@ namespace PowerStore.Core.Contract
 
         Task<int> CompleteAsync();
         int Complete();
-        public IRideRepository RideRepository { get;  }
 
 
     }

@@ -1,5 +1,4 @@
 ﻿using PowerStore.Core.Contract;
-using PowerStore.Core.Contract.RideService_Contract;
 using PowerStore.Core.Entities;
 using PowerStore.Infrastructer.Data.Context;
 using PowerStore.Infrastructer.Repositories;
@@ -19,13 +18,11 @@ namespace PowerStore.Infrastructer.Data
         private readonly ApplicationDbContext _context;
 
 
-        public IRideRepository RideRepository { get;  }
 
-        public UnitOfwork(ApplicationDbContext context  , IRideRepository rideRepository)
+        public UnitOfwork(ApplicationDbContext context )
         {
             _context = context;
             _Repository = new Hashtable();
-            RideRepository = rideRepository;    
         }
 
         public IGenaricRepositoy<T> Repositoy<T>() where T : BaseEntity

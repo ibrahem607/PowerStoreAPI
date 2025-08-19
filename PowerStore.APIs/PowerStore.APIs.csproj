@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -18,16 +18,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.33">
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Helpers\" />
     <Folder Include="wwwroot\" />
     <Folder Include="wwwroot\files\LicenseId\" />
     <Folder Include="wwwroot\files\DriverNationalId\" />
@@ -39,6 +40,11 @@
     <Folder Include="wwwroot\files\VehiclePicture\" />
     <Folder Include="wwwroot\files\ProfilePicture\" />
     <Folder Include="wwwroot\files\VehicleLicenseId\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PowerStore.Infrastructer\PowerStore.Infrastructer.csproj" />
+    <ProjectReference Include="..\PowerStore.Service\PowerStore.Service.csproj" />
   </ItemGroup>
 
 </Project>
