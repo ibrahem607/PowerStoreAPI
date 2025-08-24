@@ -17,7 +17,7 @@ namespace PowerStore.Core.Entities
     {
         public bool IsPhoneNumberConfirmed { get; set; } = false;
         public bool IsOtpValid { get; set; }
-        public string? OtpCode { get; set; } // Store the OTP
+        public string? OtpCode { get; set; } 
         public DateTime? OtpExpiryTime { get; set; } // OTP expiration time
         public string? FullName { get; set; }
         public string? ProfilePictureUrl { get; set; }
@@ -25,7 +25,7 @@ namespace PowerStore.Core.Entities
         public Gender Gender { get; set; } = Gender.Male;
         public string? MacAddress { get; set; }
 
-        public virtual List<RefreshToken> RefreshTokens { get; set; }
+        public virtual List<RefreshToken>? RefreshTokens { get; set; }
 
     }
 }

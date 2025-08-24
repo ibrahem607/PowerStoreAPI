@@ -8,11 +8,8 @@
 
   <ItemGroup>
     <Compile Remove="Contracts\**" />
-    <Compile Remove="Contract\Dtos\AdminDto\**" />
     <EmbeddedResource Remove="Contracts\**" />
-    <EmbeddedResource Remove="Contract\Dtos\AdminDto\**" />
     <None Remove="Contracts\**" />
-    <None Remove="Contract\Dtos\AdminDto\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +19,8 @@
 
   <ItemGroup>
     <Folder Include="Contract\Driver Contract\" />
+    <Folder Include="Contract\Interfaces\" />
+    <Folder Include="Enums\" />
   </ItemGroup>
 
 </Project>

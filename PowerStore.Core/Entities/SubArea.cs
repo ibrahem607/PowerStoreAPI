@@ -9,8 +9,8 @@ namespace PowerStore.Core.Entities
     public class SubArea:BaseEntity
     {
 
-        public string Name { get; set; }              // اسم المنطقه
-        public int MainAreaId { get; set; }           // رقم المنطقه الرئيسيه
-        public MainArea MainArea { get; set; }
+        public string Name { get; set; } = "";           
+        public int MainAreaId { get; set; }          
+        public MainArea? MainArea { get; set; }
     }
 }

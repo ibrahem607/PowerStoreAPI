@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PowerStore.Core\PowerStore.Core.csproj" />
     <ProjectReference Include="..\PowerStore.Infrastructer\PowerStore.Infrastructer.csproj" />
   </ItemGroup>
 

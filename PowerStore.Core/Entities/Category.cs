@@ -8,7 +8,7 @@ namespace PowerStore.Core.Entities
 {
     public class Category:BaseEntity
     {
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
 
         // Navigation property for Items
