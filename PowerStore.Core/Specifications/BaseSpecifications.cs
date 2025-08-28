@@ -19,7 +19,9 @@ namespace PowerStore.Core.Specifications
         {
             
         }
-
+        public int Skip { get; private set; }
+        public int Take { get; private set; }
+        public bool IsPagingEnabled { get; private set; }
         public BaseSpecifications(Expression<Func<T , bool>> expression)
         {
             Criteria = expression;
@@ -29,9 +31,16 @@ namespace PowerStore.Core.Specifications
         {
             OrderBy = expression;
         }
-        public void AddOrderByDesc(Expression<Func<T , object>> expression)
+        public void AddOrderByDesc(Expression<Func<T, object>> expression)
         {
             OrderByDesc = expression;
         }
+             public void ApplyPaging(int skip, int take)
+        {
+            Skip = skip;
+            Take = take;
+            IsPagingEnabled = true;
+        }
     }
+    
 }

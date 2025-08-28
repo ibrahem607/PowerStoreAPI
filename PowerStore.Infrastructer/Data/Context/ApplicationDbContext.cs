@@ -24,6 +24,17 @@ namespace PowerStore.Infrastructer.Data.Context
             base.OnModelCreating(builder);
             builder.Entity<IdentityRole>().ToTable("Roles");
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+
+            //// ADD SOFT DELETE FILTER FOR ALL BaseEntity CLASSES
+            //foreach (var entityType in builder.Model.GetEntityTypes())
+            //{
+            //    if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            //    {
+            //        builder.Entity(entityType.ClrType)
+            //            .HasQueryFilter(e => EF.Property<bool>(e, "IsDeleted") == false);
+            //    }
+            //}
         }
 
 

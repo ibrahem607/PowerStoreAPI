@@ -13,8 +13,9 @@ namespace PowerStore.Core.Entities
         [Key]
         public int Id { get; set; }
          public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
-       
+         public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
+         public DateTime DeletionDate { get; set; } = DateTime.UtcNow;
+        public bool IsDeleted { get; set; } = false;
         public override string ToString()
         {
             return $"Id: {Id}";

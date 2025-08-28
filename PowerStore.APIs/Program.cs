@@ -8,16 +8,17 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PowerStore.APIs.Hubs;
 using PowerStore.APIs.Middlewares;
+using PowerStore.Core;
 using PowerStore.Core.Contract;
 using PowerStore.Core.Contract.Errors;
 using PowerStore.Core.Contract.IdentityInterface;
 using PowerStore.Core.Entities;
-using PowerStore.Infrastructer.Data;
+using PowerStore.Infrastructer;
 using PowerStore.Infrastructer.Data.Context;
 using PowerStore.Infrastructer.Identity.DataSeed;
-using PowerStore.Infrastructer.Repositories;
 using PowerStore.Service.Identity;
-
+using PowerStore.Service.MainAreaServices;
+using PowerStore.Service.MappingProfiles;
 using PowerStore.Service.VehicleTypeService;
 using StackExchange.Redis;
 using System.Text;
@@ -73,7 +74,7 @@ namespace PowerStore.APIs
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options
-                .UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection"));
+                .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
             builder.Services.AddSingleton<IConnectionMultiplexer>(Options =>
@@ -147,8 +148,8 @@ namespace PowerStore.APIs
             builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfwork));
             builder.Services.AddScoped(typeof(IGenaricRepositoy<>), typeof(GenaricRepository<>));
             builder.Services.AddScoped<IVehicleTypeService, VehicleTypeService>();
-
-
+            builder.Services.AddScoped<IMainAreaService, MainAreaService>();
+            builder.Services.AddAutoMapper(typeof(ServiceMappingProfile));
             #endregion
 
             var app = builder.Build();

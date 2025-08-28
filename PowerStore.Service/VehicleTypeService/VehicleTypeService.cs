@@ -1,4 +1,4 @@
-﻿using PowerStore.Core.Contract;
+﻿using PowerStore.Core;
 using PowerStore.Core.Entities;
 using System;
 using System.Collections.Generic;

@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PowerStore.Core.Contract
+namespace PowerStore.Core
 {
     public interface IUnitOfWork : IAsyncDisposable
     {
-        IGenaricRepositoy<T> Repositoy<T>() where T : BaseEntity;
+        IGenaricRepositoy<T> Repository<T>() where T : BaseEntity;
 
         Task<int> CompleteAsync();
         int Complete();

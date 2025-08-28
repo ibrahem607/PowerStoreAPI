@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PowerStore.Core.Contract;
+using PowerStore.Core;
 using PowerStore.Core.Entities;
 using PowerStore.Core.Specifications;
 using PowerStore.Infrastructer.Data.Context;
@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PowerStore.Infrastructer.Repositories
+namespace PowerStore.Infrastructer
 {
     public class GenaricRepository<T> : IGenaricRepositoy<T> where T : BaseEntity
     {
@@ -60,20 +60,20 @@ namespace PowerStore.Infrastructer.Repositories
         }
 
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(int id)
            => await _context.Set<T>().FindAsync(id);
 
-        public async Task<T?> GetByIdWithSpecAsync(ISpecifications<T> spec)
+        public async Task<T> GetByIdWithSpecAsync(ISpecifications<T> spec)
         {
             return await ApplySpecification(spec).FirstOrDefaultAsync();
         }
 
-        public async Task<T?> Find(Expression<Func<T,bool>> predicate)
+        public async Task<T> Find(Expression<Func<T,bool>> predicate)
         {
             return await _context.Set<T>().Where(predicate).FirstOrDefaultAsync();
         }
 
-        public async Task<T?> GetDriverOrPassengerByIdAsync(string Id)
+        public async Task<T> GetDriverOrPassengerByIdAsync(string Id)
             => await _context.Set<T>().FindAsync(Id);
 
 

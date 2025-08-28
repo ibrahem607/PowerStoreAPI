@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PowerStore.Core.Contract
+namespace PowerStore.Core
 {
     public interface IGenaricRepositoy<T> where T : BaseEntity
     {

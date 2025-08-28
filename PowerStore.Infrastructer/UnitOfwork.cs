@@ -1,7 +1,6 @@
-﻿using PowerStore.Core.Contract;
+﻿using PowerStore.Core;
 using PowerStore.Core.Entities;
 using PowerStore.Infrastructer.Data.Context;
-using PowerStore.Infrastructer.Repositories;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PowerStore.Infrastructer.Data
+namespace PowerStore.Infrastructer
 {
     public class UnitOfwork : IUnitOfWork 
     {
@@ -25,7 +24,7 @@ namespace PowerStore.Infrastructer.Data
             _Repository = new Hashtable();
         }
 
-        public IGenaricRepositoy<T> Repositoy<T>() where T : BaseEntity
+        public IGenaricRepositoy<T> Repository<T>() where T : BaseEntity
         {
             var key = typeof(T).Name;  // driver
             if(!_Repository.ContainsKey(key))
