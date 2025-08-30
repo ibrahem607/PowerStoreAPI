@@ -14,28 +14,28 @@ namespace PowerStore.APIs.Controllers
         public MainAreasController(IMainAreaService mainAreaService) => _mainAreaService = mainAreaService;
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<MainAreaResponseDto>> GetById(int id)
+        public async Task<ActionResult<SubAreaResponseDto>> GetById(int id)
         {
             var mainArea = await _mainAreaService.GetByIdAsync(id);
             return Ok(mainArea);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<MainAreaResponseDto>>> GetAll([FromQuery] MainAreaSearchParams searchParams)
+        public async Task<ActionResult<IReadOnlyList<SubAreaResponseDto>>> GetAll([FromQuery] MainAreaSearchParams searchParams)
         {
             var mainAreas = await _mainAreaService.GetAllAsync(searchParams);
             return Ok(mainAreas);
         }
 
         [HttpPost]
-        public async Task<ActionResult<MainAreaResponseDto>> Create(CreateMainAreaDto createDto)
+        public async Task<ActionResult<SubAreaResponseDto>> Create(CreateMainAreaDto createDto)
         {
             var createdMainArea = await _mainAreaService.CreateAsync(createDto);
             return CreatedAtAction(nameof(GetById), new { id = createdMainArea.Id }, createdMainArea);
         }
 
         [HttpPut]
-        public async Task<ActionResult<MainAreaResponseDto>> Update(UpdateMainAreaDto updateDto)
+        public async Task<ActionResult<SubAreaResponseDto>> Update(UpdateMainAreaDto updateDto)
         {
             var updatedMainArea = await _mainAreaService.UpdateAsync(updateDto);
             return Ok(updatedMainArea);

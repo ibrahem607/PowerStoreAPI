@@ -150,6 +150,10 @@ namespace PowerStore.APIs
             builder.Services.AddScoped<IVehicleTypeService, VehicleTypeService>();
             builder.Services.AddScoped<IMainAreaService, MainAreaService>();
             builder.Services.AddAutoMapper(typeof(ServiceMappingProfile));
+            builder.Services.AddScoped<ISubAreaService, SubAreaService>();
+
+
+
             #endregion
 
             var app = builder.Build();

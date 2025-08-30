@@ -12,5 +12,6 @@ namespace PowerStore.Core.Entities
        
         public required string Name { get; set; }          
         public int StartNumbering { get; set; }
+        public ICollection<SubArea>? SubAreas { get; set; }
     }
 }

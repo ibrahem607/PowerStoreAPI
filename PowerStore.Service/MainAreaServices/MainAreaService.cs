@@ -23,30 +23,31 @@ namespace PowerStore.Service.MainAreaServices
             _mapper = mapper;
         }
 
-        public async Task<MainAreaResponseDto> GetByIdAsync(int id)
+        public async Task<SubAreaResponseDto> GetByIdAsync(int id)
         {
             var spec = new MainAreaSpecs(id);
             var mainArea = await _unitOfWork.Repository<MainArea>().GetByIdWithSpecAsync(spec);
-            if (mainArea == null) throw new KeyNotFoundException($"MainArea with Id {id} not found.");
-            return _mapper.Map<MainAreaResponseDto>(mainArea);
+            if (mainArea == null)
+                throw new KeyNotFoundException($"MainArea with Id {id} not found.");
+            return _mapper.Map<SubAreaResponseDto>(mainArea);
         }
 
-        public async Task<IReadOnlyList<MainAreaResponseDto>> GetAllAsync(MainAreaSearchParams searchParams)
+        public async Task<IReadOnlyList<SubAreaResponseDto>> GetAllAsync(MainAreaSearchParams searchParams)
         {
             var spec = new MainAreaSpecs(searchParams);
             var mainAreas = await _unitOfWork.Repository<MainArea>().GetAllWithSpecAsync(spec);
-            return _mapper.Map<IReadOnlyList<MainAreaResponseDto>>(mainAreas);
+            return _mapper.Map<IReadOnlyList<SubAreaResponseDto>>(mainAreas);
         }
 
-        public async Task<MainAreaResponseDto> CreateAsync(CreateMainAreaDto createDto)
+        public async Task<SubAreaResponseDto> CreateAsync(CreateMainAreaDto createDto)
         {
             var mainArea = _mapper.Map<MainArea>(createDto);
             _unitOfWork.Repository<MainArea>().Add(mainArea);
             await _unitOfWork.CompleteAsync();
-            return _mapper.Map<MainAreaResponseDto>(mainArea);
+            return _mapper.Map<SubAreaResponseDto>(mainArea);
         }
 
-        public async Task<MainAreaResponseDto> UpdateAsync(UpdateMainAreaDto updateDto)
+        public async Task<SubAreaResponseDto> UpdateAsync(UpdateMainAreaDto updateDto)
         {
             var mainArea = await _unitOfWork.Repository<MainArea>().GetByIdAsync(updateDto.Id);
             if (mainArea == null) throw new KeyNotFoundException($"MainArea with Id {updateDto.Id} not found.");
@@ -56,7 +57,7 @@ namespace PowerStore.Service.MainAreaServices
 
             _unitOfWork.Repository<MainArea>().Update(mainArea);
             await _unitOfWork.CompleteAsync();
-            return _mapper.Map<MainAreaResponseDto>(mainArea);
+            return _mapper.Map<SubAreaResponseDto>(mainArea);
         }
 
         public async Task<bool> SoftDeleteAsync(int id)
