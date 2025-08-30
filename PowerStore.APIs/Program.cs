@@ -16,6 +16,7 @@ using PowerStore.Core.Entities;
 using PowerStore.Infrastructer;
 using PowerStore.Infrastructer.Data.Context;
 using PowerStore.Infrastructer.Identity.DataSeed;
+using PowerStore.Service.CategoryServices;
 using PowerStore.Service.Identity;
 using PowerStore.Service.MainAreaServices;
 using PowerStore.Service.MappingProfiles;
@@ -152,7 +153,7 @@ namespace PowerStore.APIs
             builder.Services.AddScoped<IMainAreaService, MainAreaService>();
             builder.Services.AddAutoMapper(typeof(ServiceMappingProfile));
             builder.Services.AddScoped<ISubAreaService, SubAreaService>();
-
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 
             #endregion

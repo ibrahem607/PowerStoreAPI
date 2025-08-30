@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using PowerStore.Core.DTOs.CategoryDtos;
 using PowerStore.Core.DTOs.MainAreaDtos;
 using PowerStore.Core.DTOs.SubAreaDtos;
 using PowerStore.Core.Entities;
@@ -33,6 +34,18 @@ namespace PowerStore.Service.MappingProfiles
 
             // Map Entity to DTO (for Get)
             CreateMap<MainArea, MainAreaResponseDto>();
+
+            //category
+            CreateMap<CreateCategoryDto, Category>();
+            CreateMap<UpdateCategoryDto, Category>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<Category, CategoryResponseDto>();
+            CreateMap<Category, CategoryWithProductsDto>()
+                .ForMember(dest => dest.ProductsCount, opt => opt.MapFrom(src => src.Products != null ? src.Products.Count : 0))
+                .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products != null ? src.Products : new List<Product>()));
+
+            CreateMap<Product, CategoryProductDto>();
         }
 
     }
