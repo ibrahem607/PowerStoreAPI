@@ -20,6 +20,7 @@ using PowerStore.Service.CategoryServices;
 using PowerStore.Service.Identity;
 using PowerStore.Service.MainAreaServices;
 using PowerStore.Service.MappingProfiles;
+using PowerStore.Service.ProductService;
 using PowerStore.Service.SubAreaServices;
 using PowerStore.Service.VehicleTypeService;
 using StackExchange.Redis;
@@ -154,6 +155,7 @@ namespace PowerStore.APIs
             builder.Services.AddAutoMapper(typeof(ServiceMappingProfile));
             builder.Services.AddScoped<ISubAreaService, SubAreaService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
 
 
             #endregion

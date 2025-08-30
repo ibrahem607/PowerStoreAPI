@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using PowerStore.Core.DTOs.CategoryDtos;
 using PowerStore.Core.DTOs.MainAreaDtos;
+using PowerStore.Core.DTOs.ProductDtos;
 using PowerStore.Core.DTOs.SubAreaDtos;
 using PowerStore.Core.Entities;
 
@@ -46,6 +47,24 @@ namespace PowerStore.Service.MappingProfiles
                 .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products != null ? src.Products : new List<Product>()));
 
             CreateMap<Product, CategoryProductDto>();
+
+
+            // Add to existing ServiceMappingProfile
+            CreateMap<CreateProductDto, Product>();
+            CreateMap<UpdateProductDto, Product>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<Product, ProductResponseDto>()
+                .ForMember(dest => dest.CategoryName, opt =>
+                    opt.MapFrom(src => src.Category != null ? src.Category.Name : string.Empty))
+                .ForMember(dest => dest.ProfitMargin, opt => opt.Ignore()); // Calculated in service
+
+            CreateMap<Product, ProductDetailDto>()
+                .ForMember(dest => dest.CategoryName, opt =>
+                    opt.MapFrom(src => src.Category != null ? src.Category.Name : string.Empty))
+                .ForMember(dest => dest.CategoryDescription, opt =>
+                    opt.MapFrom(src => src.Category != null ? $"Category: {src.Category.Name}" : string.Empty))
+                .ForMember(dest => dest.ProfitMargin, opt => opt.Ignore()); // Calculated in service
         }
 
     }
