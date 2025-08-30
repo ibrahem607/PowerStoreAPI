@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using PowerStore.Core.DTOs.MainAreaDtos;
+using PowerStore.Core.DTOs.SubAreaDtos;
 using PowerStore.Core.Entities;
 
 namespace PowerStore.Service.MappingProfiles
@@ -28,10 +29,11 @@ namespace PowerStore.Service.MappingProfiles
             // Map DTO to Entity (for Create/Update)
             CreateMap<CreateMainAreaDto, MainArea>();
             CreateMap<UpdateMainAreaDto, MainArea>()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null)); // Ignore nulls on update
+             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null)); // Ignore nulls on update
 
             // Map Entity to DTO (for Get)
-            CreateMap<MainArea, SubAreaResponseDto>();
+            CreateMap<MainArea, MainAreaResponseDto>();
         }
+
     }
 }

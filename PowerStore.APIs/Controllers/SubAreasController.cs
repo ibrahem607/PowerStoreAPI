@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PowerStore.Core.Contract;
+using PowerStore.Core.DTOs.MainAreaDtos;
+using PowerStore.Core.DTOs.SubAreaDtos;
+using PowerStore.Core.EntitiesSpecifications;
 
 namespace PowerStore.APIs.Controllers
 {
@@ -60,3 +64,4 @@ namespace PowerStore.APIs.Controllers
             return NoContent();
         }
     }
+}

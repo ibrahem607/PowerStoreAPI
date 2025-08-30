@@ -12,6 +12,6 @@ namespace PowerStore.Core.Entities
 
 
         // Navigation property for Items
-        public ICollection<Product>? Products { get; set; }
+        public virtual ICollection<Product>? Products { get; set; }
     }
 }

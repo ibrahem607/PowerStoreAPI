@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using PowerStore.Core;
+using PowerStore.Core.Contract;
+using PowerStore.Core.DTOs.MainAreaDtos;
+using PowerStore.Core.DTOs.SubAreaDtos;
+using PowerStore.Core.Entities;
+using PowerStore.Core.EntitiesSpecifications;
 
 namespace PowerStore.Service.SubAreaServices
 {

@@ -19,6 +19,7 @@ using PowerStore.Infrastructer.Identity.DataSeed;
 using PowerStore.Service.Identity;
 using PowerStore.Service.MainAreaServices;
 using PowerStore.Service.MappingProfiles;
+using PowerStore.Service.SubAreaServices;
 using PowerStore.Service.VehicleTypeService;
 using StackExchange.Redis;
 using System.Text;
