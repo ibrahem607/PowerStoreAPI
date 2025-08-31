@@ -30,6 +30,7 @@
   <ItemGroup>
     <Folder Include="Helpers\" />
     <Folder Include="Extensions\" />
+    <Folder Include="Middlewares\" />
     <Folder Include="wwwroot\" />
     <Folder Include="wwwroot\files\LicenseId\" />
     <Folder Include="wwwroot\files\DriverNationalId\" />

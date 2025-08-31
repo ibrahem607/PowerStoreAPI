@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PowerStore.APIs.Hubs;
-using PowerStore.APIs.Middlewares;
 using PowerStore.Core;
 using PowerStore.Core.Contract;
 using PowerStore.Core.Contract.Errors;
@@ -123,22 +122,19 @@ namespace PowerStore.APIs
 
 
             // generation response For validation errors [Factory]
-            builder.Services.Configure<ApiBehaviorOptions>(Options =>
-            {
-                Options.InvalidModelStateResponseFactory = (ActionContext) =>
-                {
-                    var errors = ActionContext.ModelState.Where(p => p.Value.Errors.Count() > 0)
-                                                         .SelectMany(p => p.Value.Errors)
-                                                         .Select(E => E.ErrorMessage)
-                                                         .ToList();
-                    var response = new ApiValidationResponse()
-                    {
-                        Errors = errors
-                    };
+            //builder.Services.Configure<ApiBehaviorOptions>(Options =>
+            //{
+            //    Options.InvalidModelStateResponseFactory = (ActionContext) =>
+            //    {
+            //        var errors = ActionContext.ModelState.Where(p => p.Value.Errors.Count() > 0)
+            //                                             .SelectMany(p => p.Value.Errors)
+            //                                             .Select(E => E.ErrorMessage)
+            //                                             .ToList();
+                    
 
-                    return new BadRequestObjectResult(response);
-                };
-            });
+            //        return new BadRequestObjectResult(response);
+            //    };
+            //});
 
             builder.Services.Configure<FormOptions>(options =>
             {
@@ -156,7 +152,7 @@ namespace PowerStore.APIs
             builder.Services.AddScoped<ISubAreaService, SubAreaService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IProductService, ProductService>();
-
+            builder.Services.AddLogging();
             #endregion
 
             var app = builder.Build();
@@ -190,7 +186,7 @@ namespace PowerStore.APIs
 
             app.UseCors("AllowAll");
             //app.UseRouting();
-            app.UseMiddleware<ExeptionMiddleware>();
+            //app.UseMiddleware<ExeptionMiddleware>();
             app.UseHttpsRedirection();
 
 

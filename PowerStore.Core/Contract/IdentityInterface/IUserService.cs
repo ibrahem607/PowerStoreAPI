@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using PowerStore.Core.Contract.Responses;
 using PowerStore.Core.DTOs.UsersDtos;
 using PowerStore.Core.Entities;
 using PowerStore.Core.Enums;
@@ -13,13 +14,13 @@ namespace PowerStore.Core.Contract.IdentityInterface
 {
     public interface IUserService
     {
-        Task<ReturnUserDto> GetByIdAsync(string id, UserType userType);
-        Task<IReadOnlyList<ReturnUserDto>> GetAllAsync(UserSearchParams searchParams);
-        Task<IReadOnlyList<ReturnUserDto>> GetByTypeAsync(UserType userType, UserSearchParams searchParams);
-        Task<ReturnUserDto> CreateAsync(AddUserDto createDto);
-        Task<ReturnUserDto> UpdateAsync(UpdateUserDto updateDto);
-        Task<bool> DeleteAsync(string id, UserType userType);
-        Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto);
+        Task< ApiResponse <ReturnUserDto>> GetByIdAsync(string id, UserType userType);
+        Task<ApiResponse<IReadOnlyList<ReturnUserDto>>> GetAllAsync(UserSearchParams searchParams);
+        Task<ApiResponse<IReadOnlyList<ReturnUserDto>>> GetByTypeAsync(UserType userType, UserSearchParams searchParams);
+        Task<ApiResponse<ReturnUserDto>> CreateAsync(AddUserDto createDto);
+        Task<ApiResponse<ReturnUserDto>> UpdateAsync(UpdateUserDto updateDto);
+        Task<ApiResponse<bool>> DeleteAsync(string id, UserType userType);
+        Task<ApiResponse<bool>> ChangePasswordAsync(ChangePasswordDto changePasswordDto);
 
         // Helper methods
         string GetRoleName(UserType userType);
