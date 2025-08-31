@@ -14,7 +14,7 @@ namespace PowerStore.Core.Entities
         public string Notes { get; set; }                     // ملاحظات
 
         public int SupplierId { get; set; }
-        public Supplier Supplier { get; set; }
+        public ApplicationUser Supplier { get; set; }
 
         public ICollection<InvoiceItem> Items { get; set; }
     }

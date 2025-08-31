@@ -15,9 +15,7 @@ namespace PowerStore.Infrastructer.Data.Config
         {
             builder.Property(U => U.FullName).HasMaxLength(100);
 
-            builder.Property(U => U.Gender)
-                .HasConversion(gender => gender.ToString(), genderComparer => (Gender) Enum.Parse(typeof(Gender), genderComparer));
-            
+           
         }
     }
 }

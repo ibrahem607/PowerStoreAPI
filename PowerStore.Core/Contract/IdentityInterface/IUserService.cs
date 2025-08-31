@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using PowerStore.Core.DTOs.UsersDtos;
 using PowerStore.Core.Entities;
+using PowerStore.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +13,16 @@ namespace PowerStore.Core.Contract.IdentityInterface
 {
     public interface IUserService
     {
-        List<ApplicationUser> GetBy(Expression<Func<ApplicationUser, bool>> query);
-        Task<IdentityResult> Update(ApplicationUser user);
-        Task<IdentityResult> UpdateUserRole(ApplicationUser user, string role);
-        Task<bool> ValidateUserRole(ApplicationUser user, string role);
-        Task<IList<string>> GetUserRole(ApplicationUser user);
+        Task<ReturnUserDto> GetByIdAsync(string id, UserType userType);
+        Task<IReadOnlyList<ReturnUserDto>> GetAllAsync(UserSearchParams searchParams);
+        Task<IReadOnlyList<ReturnUserDto>> GetByTypeAsync(UserType userType, UserSearchParams searchParams);
+        Task<ReturnUserDto> CreateAsync(AddUserDto createDto);
+        Task<ReturnUserDto> UpdateAsync(UpdateUserDto updateDto);
+        Task<bool> DeleteAsync(string id, UserType userType);
+        Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto);
+
+        // Helper methods
+        string GetRoleName(UserType userType);
+        string GetUserTypeName(UserType userType);
     }
 }

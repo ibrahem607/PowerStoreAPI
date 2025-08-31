@@ -39,7 +39,6 @@ namespace PowerStore.Infrastructer.Data.Context
 
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-        public DbSet<Passenger> Passengers { get; set; }
 
         public DbSet<Company> Companies { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
@@ -48,9 +47,6 @@ namespace PowerStore.Infrastructer.Data.Context
         public DbSet<Product> products { get; set; }
         public DbSet<MainArea> mainAreas { get; set; }
         public DbSet<SubArea> subAreas { get; set; }
-        public DbSet<Representative> representatives { get; set; }
-        public DbSet<StoreKeeper> storeKeepers { get; set; }
-        public DbSet<Supplier> suppliers { get; set; }
         public DbSet<Branch> branches { get; set; }
 
        

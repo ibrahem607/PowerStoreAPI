@@ -8,6 +8,7 @@ using PowerStore.Core.DTOs.CategoryDtos;
 using PowerStore.Core.DTOs.MainAreaDtos;
 using PowerStore.Core.DTOs.ProductDtos;
 using PowerStore.Core.DTOs.SubAreaDtos;
+using PowerStore.Core.DTOs.UsersDtos;
 using PowerStore.Core.Entities;
 
 namespace PowerStore.Service.MappingProfiles
@@ -65,6 +66,19 @@ namespace PowerStore.Service.MappingProfiles
                 .ForMember(dest => dest.CategoryDescription, opt =>
                     opt.MapFrom(src => src.Category != null ? $"Category: {src.Category.Name}" : string.Empty))
                 .ForMember(dest => dest.ProfitMargin, opt => opt.Ignore()); // Calculated in service
+
+
+
+            // Add to existing ServiceMappingProfile
+            CreateMap<AddUserDto, ApplicationUser>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType));
+
+            CreateMap<UpdateUserDto, ApplicationUser>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<ApplicationUser, ReturnUserDto>();
         }
 
     }
