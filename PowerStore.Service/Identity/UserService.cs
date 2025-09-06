@@ -27,24 +27,25 @@ namespace PowerStore.Service.Identity
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
         private readonly ILogger<UserService> _logger;
-       public UserService(UserManager<ApplicationUser> userManager,
-            ILogger<UserService> logger,IMapper mapper)
+        public UserService(UserManager<ApplicationUser> userManager,
+             ILogger<UserService> logger, IMapper mapper)
         {
             _userManager = userManager;
             _mapper = mapper;
             _logger = logger;
         }
 
-        public async Task<ApiResponse< ReturnUserDto>> GetByIdAsync(string id, UserType userType)
+        public async Task<ApiResponse<ReturnUserDto>> GetByIdAsync(string id, UserType userType)
         {
-            try { 
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null || user.UserType != userType)
-                throw new KeyNotFoundException($"{GetUserTypeName(userType)} with Id {id} not found.");
+            try
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                if (user == null || user.UserType != userType)
+                    throw new KeyNotFoundException($"{GetUserTypeName(userType)} with Id {id} not found.");
 
-            var userDto = _mapper.Map<ReturnUserDto>(user);
-            return ApiResponse<ReturnUserDto>.SuccessResponse(userDto, $"{GetUserTypeName(userType)} retrieved successfully");
-                 }
+                var userDto = _mapper.Map<ReturnUserDto>(user);
+                return ApiResponse<ReturnUserDto>.SuccessResponse(userDto, $"{GetUserTypeName(userType)} retrieved successfully");
+            }
             catch (NotFoundException ex)
             {
                 _logger.LogWarning(ex, "User not found: {Id}, Type: {UserType}", id, userType);
@@ -56,35 +57,36 @@ namespace PowerStore.Service.Identity
                 return ApiResponse<ReturnUserDto>.ErrorResponse("An error occurred while retrieving the user", statusCode: 500);
             }
         }
-            
 
-        public async Task<ApiResponse< IReadOnlyList<ReturnUserDto>>> GetAllAsync(UserSearchParams searchParams)
+
+        public async Task<ApiResponse<IReadOnlyList<ReturnUserDto>>> GetAllAsync(UserSearchParams searchParams)
         {
-            try { 
-            var query = _userManager.Users.AsQueryable();
-
-            // Apply filters
-            if (!string.IsNullOrEmpty(searchParams.Search))
+            try
             {
-                query = query.Where(u =>
-                    u.FullName.Contains(searchParams.Search) ||
-                    u.UserName.Contains(searchParams.Search) ||
-                    (u.Email != null && u.Email.Contains(searchParams.Search)));
-            }
+                var query = _userManager.Users.AsQueryable();
 
-            
+                // Apply filters
+                if (!string.IsNullOrEmpty(searchParams.Search))
+                {
+                    query = query.Where(u =>
+                        u.FullName.Contains(searchParams.Search) ||
+                        u.UserName.Contains(searchParams.Search) ||
+                        (u.Email != null && u.Email.Contains(searchParams.Search)));
+                }
 
-            if (searchParams.UserType.HasValue)
-            {
-                query = query.Where(u => u.UserType == searchParams.UserType.Value);
-            }
 
-            // Apply ordering and pagination
-            query = query.OrderBy(u => u.FullName)
-                        .Skip(searchParams.PageSize * (searchParams.PageIndex - 1))
-                        .Take(searchParams.PageSize);
 
-            var users = await query.ToListAsync();
+                if (searchParams.UserType.HasValue)
+                {
+                    query = query.Where(u => u.UserType == searchParams.UserType.Value);
+                }
+
+                // Apply ordering and pagination
+                query = query.OrderBy(u => u.FullName)
+                            .Skip(searchParams.PageSize * (searchParams.PageIndex - 1))
+                            .Take(searchParams.PageSize);
+
+                var users = await query.ToListAsync();
                 var userDtos = _mapper.Map<IReadOnlyList<ReturnUserDto>>(users);
 
                 return ApiResponse<IReadOnlyList<ReturnUserDto>>.SuccessResponse(userDtos, "Users retrieved successfully");
@@ -130,7 +132,8 @@ namespace PowerStore.Service.Identity
         }
         public async Task<ApiResponse<ReturnUserDto>> CreateAsync(AddUserDto createDto)
         {
-            try {
+            try
+            {
                 // Generate username from full name if not provided
                 var userName = createDto.UserName;
                 if (string.IsNullOrEmpty(userName))
@@ -191,27 +194,27 @@ namespace PowerStore.Service.Identity
                 response.Password = password;
                 return ApiResponse<ReturnUserDto>.SuccessResponse(response, $"{GetUserTypeName(createDto.UserType)} created successfully", 201);
             }
-        catch (ValidationException ex)
-        {
-            _logger.LogWarning(ex, "Validation error creating user");
-            return ApiResponse<ReturnUserDto>.ErrorResponse(ex.Message,ex.Errors, 400);
+            catch (ValidationException ex)
+            {
+                _logger.LogWarning(ex, "Validation error creating user");
+                return ApiResponse<ReturnUserDto>.ErrorResponse(ex.Message, ex.Errors, 400);
+            }
+            catch (BusinessRuleException ex)
+            {
+                _logger.LogWarning(ex, "Business rule violation creating user");
+                return ApiResponse<ReturnUserDto>.ErrorResponse(ex.Message, statusCode: 400);
+            }
+            catch (IdentityOperationException ex)
+            {
+                _logger.LogError(ex, "Identity operation failed creating user");
+                return ApiResponse<ReturnUserDto>.ErrorResponse(ex.Message, ex.Errors, 400);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating user");
+                return ApiResponse<ReturnUserDto>.ErrorResponse("An error occurred while creating the user", statusCode: 500);
+            }
         }
-        catch (BusinessRuleException ex)
-        {
-            _logger.LogWarning(ex, "Business rule violation creating user");
-            return ApiResponse<ReturnUserDto>.ErrorResponse(ex.Message, statusCode: 400);
-        }
-        catch (IdentityOperationException ex)
-        {
-            _logger.LogError(ex, "Identity operation failed creating user");
-return ApiResponse<ReturnUserDto>.ErrorResponse(ex.Message, ex.Errors, 400);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating user");
-return ApiResponse<ReturnUserDto>.ErrorResponse("An error occurred while creating the user", statusCode: 500);
-        }
-    }
 
         // Helper methods for generating username and password
         private string GenerateUserNameFromFullName(string fullName)
@@ -305,16 +308,16 @@ return ApiResponse<ReturnUserDto>.ErrorResponse("An error occurred while creatin
             try
             {
                 var user = await _userManager.FindByIdAsync(id);
-            if (user == null || user.UserType != userType)
-                throw new NotFoundException($"{GetUserTypeName(userType)} with Id {id} not found.");
+                if (user == null || user.UserType != userType)
+                    throw new NotFoundException($"{GetUserTypeName(userType)} with Id {id} not found.");
 
-            var result = await _userManager.DeleteAsync(user);
+                var result = await _userManager.DeleteAsync(user);
 
-            if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new IdentityOperationException($"Failed to delete {GetUserTypeName(userType)}: {errors}");
-            }
+                if (!result.Succeeded)
+                {
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                    throw new IdentityOperationException($"Failed to delete {GetUserTypeName(userType)}: {errors}");
+                }
 
                 return ApiResponse<bool>.SuccessResponse(true, $"{GetUserTypeName(userType)} deleted successfully");
             }
@@ -337,23 +340,24 @@ return ApiResponse<ReturnUserDto>.ErrorResponse("An error occurred while creatin
 
         public async Task<ApiResponse<bool>> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
         {
-            try { 
-            var user = await _userManager.FindByIdAsync(changePasswordDto.UserId);
-            if (user == null || user.UserType != changePasswordDto.UserType)
-                throw new NotFoundException($"{GetUserTypeName(changePasswordDto.UserType)} with Id {changePasswordDto.UserId} not found.");
-
-            // Generate a password reset token and reset the password
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, token, changePasswordDto.NewPassword);
-
-            if (!result.Succeeded)
+            try
             {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new IdentityOperationException($"Failed to change password: {errors}");
-            }
+                var user = await _userManager.FindByIdAsync(changePasswordDto.UserId);
+                if (user == null || user.UserType != changePasswordDto.UserType)
+                    throw new NotFoundException($"{GetUserTypeName(changePasswordDto.UserType)} with Id {changePasswordDto.UserId} not found.");
 
-            user.UpdatedDate = DateTime.UtcNow;
-            await _userManager.UpdateAsync(user);
+                // Generate a password reset token and reset the password
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var result = await _userManager.ResetPasswordAsync(user, token, changePasswordDto.NewPassword);
+
+                if (!result.Succeeded)
+                {
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                    throw new IdentityOperationException($"Failed to change password: {errors}");
+                }
+
+                user.UpdatedDate = DateTime.UtcNow;
+                await _userManager.UpdateAsync(user);
 
                 return ApiResponse<bool>.SuccessResponse(true, $"Password changed successfully");
             }
@@ -374,7 +378,7 @@ return ApiResponse<ReturnUserDto>.ErrorResponse("An error occurred while creatin
             }
         }
 
-       
+
 
         // Helper methods
         public string GetRoleName(UserType userType)
@@ -385,7 +389,7 @@ return ApiResponse<ReturnUserDto>.ErrorResponse("An error occurred while creatin
                 UserType.Representative => "Representative",
                 UserType.Collector => "Collector",
                 UserType.StoreKeeper => "StoreKeeper",
-                UserType.Supplier=>"Supplier",
+                UserType.Supplier => "Supplier",
                 _ => throw new ArgumentException("Invalid user type")
             };
         }

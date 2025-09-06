@@ -21,7 +21,6 @@ using PowerStore.Service.MainAreaServices;
 using PowerStore.Service.MappingProfiles;
 using PowerStore.Service.ProductService;
 using PowerStore.Service.SubAreaServices;
-using PowerStore.Service.VehicleTypeService;
 using StackExchange.Redis;
 using System.Text;
 
@@ -146,7 +145,6 @@ namespace PowerStore.APIs
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfwork));
             builder.Services.AddScoped(typeof(IGenaricRepositoy<>), typeof(GenaricRepository<>));
-            builder.Services.AddScoped<IVehicleTypeService, VehicleTypeService>();
             builder.Services.AddScoped<IMainAreaService, MainAreaService>();
             builder.Services.AddAutoMapper(typeof(ServiceMappingProfile));
             builder.Services.AddScoped<ISubAreaService, SubAreaService>();

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using PowerStore.Core;
 using PowerStore.Core.Contract;
+using PowerStore.Core.Contract.Responses;
 using PowerStore.Core.DTOs.MainAreaDtos;
 using PowerStore.Core.Entities;
 using PowerStore.Core.EntitiesSpecifications;
-using PowerStore.Core;
 
 namespace PowerStore.Service.MainAreaServices
 {
@@ -23,62 +23,63 @@ namespace PowerStore.Service.MainAreaServices
             _mapper = mapper;
         }
 
-        public async Task<MainAreaResponseDto> GetByIdAsync(int id)
+        public async Task<ApiResponse<MainAreaResponseDto>> GetByIdAsync(int id)
         {
             var spec = new MainAreaSpecs(id);
             var mainArea = await _unitOfWork.Repository<MainArea>().GetByIdWithSpecAsync(spec);
+
             if (mainArea == null)
-                throw new KeyNotFoundException($"MainArea with Id {id} not found.");
-            return _mapper.Map<MainAreaResponseDto>(mainArea);
+                return ApiResponse<MainAreaResponseDto>.ErrorResponse($"MainArea with Id {id} not found.");
+
+            var mainAreaDto = _mapper.Map<MainAreaResponseDto>(mainArea);
+            return ApiResponse<MainAreaResponseDto>.SuccessResponse(mainAreaDto, "Main area retrieved successfully.");
         }
 
-        public async Task<IReadOnlyList<MainAreaResponseDto>> GetAllAsync(MainAreaSearchParams searchParams)
+        public async Task<ApiResponse<IReadOnlyList<MainAreaResponseDto>>> GetAllAsync(MainAreaSearchParams searchParams)
         {
             var spec = new MainAreaSpecs(searchParams);
             var mainAreas = await _unitOfWork.Repository<MainArea>().GetAllWithSpecAsync(spec);
-            //  return _mapper.Map<IReadOnlyList<MainAreaResponseDto>>(mainAreas);
-            // var result = new List<MainAreaResponseDto>();
-            // foreach (var mainArea in mainAreas)
-            //{
-            //    result.Add(_mapper.Map<MainAreaResponseDto>(mainArea));
-            //}
 
-            // return result;
-            return mainAreas.Select(ma => _mapper.Map<MainAreaResponseDto>(ma)).ToList();
-
+            var mainAreasDto = mainAreas.Select(ma => _mapper.Map<MainAreaResponseDto>(ma)).ToList();
+            return ApiResponse<IReadOnlyList<MainAreaResponseDto>>.SuccessResponse(mainAreasDto, "Main areas retrieved successfully.");
         }
 
-        public async Task<MainAreaResponseDto> CreateAsync(CreateMainAreaDto createDto)
+        public async Task<ApiResponse<MainAreaResponseDto>> CreateAsync(CreateMainAreaDto createDto)
         {
             var mainArea = _mapper.Map<MainArea>(createDto);
             _unitOfWork.Repository<MainArea>().Add(mainArea);
             await _unitOfWork.CompleteAsync();
-            return _mapper.Map<MainAreaResponseDto>(mainArea);
+
+            var mainAreaDto = _mapper.Map<MainAreaResponseDto>(mainArea);
+            return ApiResponse<MainAreaResponseDto>.SuccessResponse(mainAreaDto, "Main area created successfully.");
         }
 
-        public async Task<MainAreaResponseDto> UpdateAsync(UpdateMainAreaDto updateDto)
+        public async Task<ApiResponse<MainAreaResponseDto>> UpdateAsync(UpdateMainAreaDto updateDto)
         {
             var mainArea = await _unitOfWork.Repository<MainArea>().GetByIdAsync(updateDto.Id);
-            if (mainArea == null) throw new KeyNotFoundException($"MainArea with Id {updateDto.Id} not found.");
+            if (mainArea == null)
+                return ApiResponse<MainAreaResponseDto>.ErrorResponse($"MainArea with Id {updateDto.Id} not found.");
 
-            _mapper.Map(updateDto, mainArea); // Map updates from DTO to the fetched entity
+            _mapper.Map(updateDto, mainArea);
             mainArea.UpdatedDate = DateTime.UtcNow;
 
             _unitOfWork.Repository<MainArea>().Update(mainArea);
             await _unitOfWork.CompleteAsync();
-            return _mapper.Map<MainAreaResponseDto>(mainArea);
+
+            var mainAreaDto = _mapper.Map<MainAreaResponseDto>(mainArea);
+            return ApiResponse<MainAreaResponseDto>.SuccessResponse(mainAreaDto, "Main area updated successfully.");
         }
 
-        public async Task<bool> SoftDeleteAsync(int id)
+        public async Task<ApiResponse<bool>> SoftDeleteAsync(int id)
         {
             var mainArea = await _unitOfWork.Repository<MainArea>().GetByIdAsync(id);
-            if (mainArea == null) 
-                
-               throw new KeyNotFoundException($"MainArea with Id {id} not found.");
+            if (mainArea == null)
+                return ApiResponse<bool>.ErrorResponse($"MainArea with Id {id} not found.");
 
-            _unitOfWork.Repository<MainArea>().Delete(mainArea); // This performs the soft delete
+            _unitOfWork.Repository<MainArea>().Delete(mainArea); // Soft delete
             await _unitOfWork.CompleteAsync();
-            return true;
+
+            return ApiResponse<bool>.SuccessResponse(true, "Main area deleted successfully.");
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PowerStore.Core.Contract.Responses;
 using PowerStore.Core.DTOs.MainAreaDtos;
 using PowerStore.Core.EntitiesSpecifications;
 
@@ -10,10 +11,14 @@ namespace PowerStore.Core.Contract
 {
     public interface IMainAreaService
     {
-        Task<MainAreaResponseDto> GetByIdAsync(int id);
-        Task<IReadOnlyList<MainAreaResponseDto>> GetAllAsync(MainAreaSearchParams searchParams);
-        Task<MainAreaResponseDto> CreateAsync(CreateMainAreaDto createDto);
-        Task<MainAreaResponseDto> UpdateAsync(UpdateMainAreaDto updateDto);
-        Task<bool> SoftDeleteAsync(int id);
+        Task<ApiResponse<MainAreaResponseDto>> GetByIdAsync(int id);
+        
+        Task<ApiResponse<IReadOnlyList<MainAreaResponseDto>>> GetAllAsync(MainAreaSearchParams searchParams);
+
+        Task<ApiResponse<MainAreaResponseDto>> CreateAsync(CreateMainAreaDto createDto);
+
+        Task<ApiResponse<MainAreaResponseDto>> UpdateAsync(UpdateMainAreaDto updateDto);
+
+        Task<ApiResponse<bool>> SoftDeleteAsync(int id);
     }
 }

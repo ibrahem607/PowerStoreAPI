@@ -13,9 +13,9 @@ namespace PowerStore.Core.Entities
         public int InvoiceId { get; set; }
         public Invoice Invoice { get; set; }
 
-        public string ProductType { get; set; }               // نوع المنتج
-        public string ProductName { get; set; }               // المنتج
-        public int Quantity { get; set; }                     // الكميه
+        public string ProductType { get; set; }              
+        public string ProductName { get; set; }                
+        public int Quantity { get; set; }                     
         public decimal UnitPrice { get; set; }
     }
 

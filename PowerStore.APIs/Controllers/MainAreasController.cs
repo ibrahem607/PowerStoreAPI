@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PowerStore.Core.Contract;
+using PowerStore.Core.Contract.Responses;
 using PowerStore.Core.DTOs.MainAreaDtos;
 using PowerStore.Core.EntitiesSpecifications;
 
@@ -11,41 +12,45 @@ namespace PowerStore.APIs.Controllers
     public class MainAreasController : ControllerBase
     {
         private readonly IMainAreaService _mainAreaService;
-        public MainAreasController(IMainAreaService mainAreaService) => _mainAreaService = mainAreaService;
+
+        public MainAreasController(IMainAreaService mainAreaService)
+        {
+            _mainAreaService = mainAreaService;
+        }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<SubAreaResponseDto>> GetById(int id)
+        public async Task<ActionResult<ApiResponse<MainAreaResponseDto>>> GetById(int id)
         {
-            var mainArea = await _mainAreaService.GetByIdAsync(id);
-            return Ok(mainArea);
+            var result = await _mainAreaService.GetByIdAsync(id);
+            return StatusCode(result.StatusCode, result);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<SubAreaResponseDto>>> GetAll([FromQuery] MainAreaSearchParams searchParams)
+        public async Task<ActionResult<ApiResponse<IReadOnlyList<MainAreaResponseDto>>>> GetAll([FromQuery] MainAreaSearchParams searchParams)
         {
-            var mainAreas = await _mainAreaService.GetAllAsync(searchParams);
-            return Ok(mainAreas);
+            var result = await _mainAreaService.GetAllAsync(searchParams);
+            return StatusCode(result.StatusCode, result);
         }
 
         [HttpPost]
-        public async Task<ActionResult<SubAreaResponseDto>> Create(CreateMainAreaDto createDto)
+        public async Task<ActionResult<ApiResponse<MainAreaResponseDto>>> Create(CreateMainAreaDto createDto)
         {
-            var createdMainArea = await _mainAreaService.CreateAsync(createDto);
-            return CreatedAtAction(nameof(GetById), new { id = createdMainArea.Id }, createdMainArea);
+            var result = await _mainAreaService.CreateAsync(createDto);
+            return StatusCode(result.StatusCode, result);
         }
 
         [HttpPut]
-        public async Task<ActionResult<SubAreaResponseDto>> Update(UpdateMainAreaDto updateDto)
+        public async Task<ActionResult<ApiResponse<MainAreaResponseDto>>> Update(UpdateMainAreaDto updateDto)
         {
-            var updatedMainArea = await _mainAreaService.UpdateAsync(updateDto);
-            return Ok(updatedMainArea);
+            var result = await _mainAreaService.UpdateAsync(updateDto);
+            return StatusCode(result.StatusCode, result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
         {
-            await _mainAreaService.SoftDeleteAsync(id);
-            return NoContent(); // 204 Success, no content to return
+            var result = await _mainAreaService.SoftDeleteAsync(id);
+            return StatusCode(result.StatusCode, result);
         }
     }
 }

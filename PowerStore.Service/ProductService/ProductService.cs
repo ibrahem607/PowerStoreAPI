@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using PowerStore.Core;
 using PowerStore.Core.Contract;
+using PowerStore.Core.Contract.Responses;
 using PowerStore.Core.DTOs.ProductDtos;
 using PowerStore.Core.Entities;
 using PowerStore.Core.EntitiesSpecifications;
-using PowerStore.Core;
 
 namespace PowerStore.Service.ProductService
 {
@@ -23,69 +23,68 @@ namespace PowerStore.Service.ProductService
             _mapper = mapper;
         }
 
-        public async Task<ProductResponseDto> GetByIdAsync(int id)
+        public async Task<ApiResponse<ProductResponseDto>> GetByIdAsync(int id)
         {
             var spec = new ProductSpecs(id);
             var product = await _unitOfWork.Repository<Product>().GetByIdWithSpecAsync(spec);
 
-            if (product == null) throw new KeyNotFoundException($"Product with Id {id} not found.");
+            if (product == null)
+                return ApiResponse<ProductResponseDto>.ErrorResponse($"Product with Id {id} not found.");
 
             var response = _mapper.Map<ProductResponseDto>(product);
             response.ProfitMargin = await CalculateProfitMarginAsync(id);
-            return response;
+            return ApiResponse<ProductResponseDto>.SuccessResponse(response, "Product retrieved successfully.");
         }
 
-        public async Task<ProductDetailDto> GetByIdWithDetailsAsync(int id)
+        public async Task<ApiResponse<ProductDetailDto>> GetByIdWithDetailsAsync(int id)
         {
             var spec = new ProductSpecs(id);
             var product = await _unitOfWork.Repository<Product>().GetByIdWithSpecAsync(spec);
 
-            if (product == null) throw new KeyNotFoundException($"Product with Id {id} not found.");
+            if (product == null)
+                return ApiResponse<ProductDetailDto>.ErrorResponse($"Product with Id {id} not found.");
 
             var response = _mapper.Map<ProductDetailDto>(product);
             response.ProfitMargin = await CalculateProfitMarginAsync(id);
-            return response;
+            return ApiResponse<ProductDetailDto>.SuccessResponse(response, "Product with details retrieved successfully.");
         }
 
-        public async Task<IReadOnlyList<ProductResponseDto>> GetAllAsync(ProductSearchParams searchParams)
+        public async Task<ApiResponse<IReadOnlyList<ProductResponseDto>>> GetAllAsync(ProductSearchParams searchParams)
         {
             var spec = new ProductSpecs(searchParams);
             var products = await _unitOfWork.Repository<Product>().GetAllWithSpecAsync(spec);
 
             var response = _mapper.Map<IReadOnlyList<ProductResponseDto>>(products);
 
-            // Calculate profit margin for each product
             foreach (var productDto in response)
             {
                 productDto.ProfitMargin = await CalculateProfitMarginAsync(productDto.Id);
             }
 
-            return response;
+            return ApiResponse<IReadOnlyList<ProductResponseDto>>.SuccessResponse(response, "Products retrieved successfully.");
         }
 
-        public async Task<IReadOnlyList<ProductResponseDto>> GetByCategoryIdAsync(int categoryId, ProductSearchParams searchParams)
+        public async Task<ApiResponse<IReadOnlyList<ProductResponseDto>>> GetByCategoryIdAsync(int categoryId, ProductSearchParams searchParams)
         {
-            // Verify category exists
             var category = await _unitOfWork.Repository<Category>().GetByIdAsync(categoryId);
-            if (category == null) throw new KeyNotFoundException($"Category with Id {categoryId} not found.");
+            if (category == null)
+                return ApiResponse<IReadOnlyList<ProductResponseDto>>.ErrorResponse($"Category with Id {categoryId} not found.");
 
             var spec = new ProductSpecs(categoryId, searchParams);
             var products = await _unitOfWork.Repository<Product>().GetAllWithSpecAsync(spec);
 
-            return _mapper.Map<IReadOnlyList<ProductResponseDto>>(products);
+            var response = _mapper.Map<IReadOnlyList<ProductResponseDto>>(products);
+            return ApiResponse<IReadOnlyList<ProductResponseDto>>.SuccessResponse(response, "Products retrieved successfully for the category.");
         }
 
-        public async Task<ProductResponseDto> CreateAsync(CreateProductDto createDto)
+        public async Task<ApiResponse<ProductResponseDto>> CreateAsync(CreateProductDto createDto)
         {
-            // Verify category exists
             var category = await _unitOfWork.Repository<Category>().GetByIdAsync(createDto.CategoryId);
-            if (category == null) throw new KeyNotFoundException($"Category with Id {createDto.CategoryId} not found.");
+            if (category == null)
+                return ApiResponse<ProductResponseDto>.ErrorResponse($"Category with Id {createDto.CategoryId} not found.");
 
-            // Validate sale price > purchase price
             if (createDto.SalePrice <= createDto.PurchasePrice)
-            {
-                throw new InvalidOperationException("Sale price must be greater than purchase price.");
-            }
+                return ApiResponse<ProductResponseDto>.ErrorResponse("Sale price must be greater than purchase price.");
 
             var product = _mapper.Map<Product>(createDto);
             _unitOfWork.Repository<Product>().Add(product);
@@ -94,26 +93,25 @@ namespace PowerStore.Service.ProductService
             var response = _mapper.Map<ProductResponseDto>(product);
             response.CategoryName = category.Name;
             response.ProfitMargin = await CalculateProfitMarginAsync(product.Id);
-            return response;
+
+            return ApiResponse<ProductResponseDto>.SuccessResponse(response, "Product created successfully.");
         }
 
-        public async Task<ProductResponseDto> UpdateAsync(UpdateProductDto updateDto)
+        public async Task<ApiResponse<ProductResponseDto>> UpdateAsync(UpdateProductDto updateDto)
         {
             var product = await _unitOfWork.Repository<Product>().GetByIdAsync(updateDto.Id);
-            if (product == null) throw new KeyNotFoundException($"Product with Id {updateDto.Id} not found.");
+            if (product == null)
+                return ApiResponse<ProductResponseDto>.ErrorResponse($"Product with Id {updateDto.Id} not found.");
 
-            // Verify category exists if changing category
             if (product.CategoryId != updateDto.CategoryId)
             {
                 var category = await _unitOfWork.Repository<Category>().GetByIdAsync(updateDto.CategoryId);
-                if (category == null) throw new KeyNotFoundException($"Category with Id {updateDto.CategoryId} not found.");
+                if (category == null)
+                    return ApiResponse<ProductResponseDto>.ErrorResponse($"Category with Id {updateDto.CategoryId} not found.");
             }
 
-            // Validate sale price > purchase price
             if (updateDto.SalePrice <= updateDto.PurchasePrice)
-            {
-                throw new InvalidOperationException("Sale price must be greater than purchase price.");
-            }
+                return ApiResponse<ProductResponseDto>.ErrorResponse("Sale price must be greater than purchase price.");
 
             _mapper.Map(updateDto, product);
             product.UpdatedDate = DateTime.UtcNow;
@@ -121,27 +119,30 @@ namespace PowerStore.Service.ProductService
             _unitOfWork.Repository<Product>().Update(product);
             await _unitOfWork.CompleteAsync();
 
-            // Get updated entity with category included
             var updatedProduct = await _unitOfWork.Repository<Product>().GetByIdWithSpecAsync(new ProductSpecs(product.Id));
             var response = _mapper.Map<ProductResponseDto>(updatedProduct);
             response.ProfitMargin = await CalculateProfitMarginAsync(product.Id);
-            return response;
+
+            return ApiResponse<ProductResponseDto>.SuccessResponse(response, "Product updated successfully.");
         }
 
-        public async Task<bool> SoftDeleteAsync(int id)
+        public async Task<ApiResponse<bool>> SoftDeleteAsync(int id)
         {
             var product = await _unitOfWork.Repository<Product>().GetByIdAsync(id);
-            if (product == null) throw new KeyNotFoundException($"Product with Id {id} not found.");
+            if (product == null)
+                return ApiResponse<bool>.ErrorResponse($"Product with Id {id} not found.");
 
             _unitOfWork.Repository<Product>().Delete(product);
             await _unitOfWork.CompleteAsync();
-            return true;
+
+            return ApiResponse<bool>.SuccessResponse(true, "Product deleted successfully.");
         }
 
         public async Task<decimal> CalculateProfitMarginAsync(int id)
         {
             var product = await _unitOfWork.Repository<Product>().GetByIdAsync(id);
-            if (product == null) return 0;
+            if (product == null)
+                return 0;
 
             var profit = product.SalePrice - product.PurchasePrice;
             var profitMargin = (profit / product.SalePrice) * 100;

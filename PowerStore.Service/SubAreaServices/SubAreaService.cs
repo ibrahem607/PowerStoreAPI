@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using PowerStore.Core;
 using PowerStore.Core.Contract;
+using PowerStore.Core.Contract.Responses;
 using PowerStore.Core.DTOs.MainAreaDtos;
 using PowerStore.Core.DTOs.SubAreaDtos;
 using PowerStore.Core.Entities;
@@ -24,54 +24,63 @@ namespace PowerStore.Service.SubAreaServices
             _mapper = mapper;
         }
 
-        public async Task<SubAreaResponseDto> GetByIdAsync(int id)
+        public async Task<ApiResponse<SubAreaResponseDto>> GetByIdAsync(int id)
         {
             var spec = new SubAreaSpecs(id);
             var subArea = await _unitOfWork.Repository<SubArea>().GetByIdWithSpecAsync(spec);
-            if (subArea == null) throw new KeyNotFoundException($"SubArea with Id {id} not found.");
-            return _mapper.Map<SubAreaResponseDto>(subArea);
+
+            if (subArea == null)
+                return ApiResponse<SubAreaResponseDto>.ErrorResponse($"SubArea with Id {id} not found.");
+
+            var subAreaDto = _mapper.Map<SubAreaResponseDto>(subArea);
+            return ApiResponse<SubAreaResponseDto>.SuccessResponse(subAreaDto, "SubArea retrieved successfully.");
         }
 
-        public async Task<IReadOnlyList<SubAreaResponseDto>> GetAllAsync(SubAreaSearchParams searchParams)
+        public async Task<ApiResponse<IReadOnlyList<SubAreaResponseDto>>> GetAllAsync(SubAreaSearchParams searchParams)
         {
             var spec = new SubAreaSpecs(searchParams);
             var subAreas = await _unitOfWork.Repository<SubArea>().GetAllWithSpecAsync(spec);
-            return _mapper.Map<IReadOnlyList<SubAreaResponseDto>>(subAreas);
+
+            var subAreasDto = subAreas.Select(sa => _mapper.Map<SubAreaResponseDto>(sa)).ToList();
+            return ApiResponse<IReadOnlyList<SubAreaResponseDto>>.SuccessResponse(subAreasDto, "SubAreas retrieved successfully.");
         }
 
-        public async Task<IReadOnlyList<SubAreaResponseDto>> GetByMainAreaIdAsync(int mainAreaId, SubAreaSearchParams searchParams)
+        public async Task<ApiResponse<IReadOnlyList<SubAreaResponseDto>>> GetByMainAreaIdAsync(int mainAreaId, SubAreaSearchParams searchParams)
         {
             var spec = new SubAreaSpecs(mainAreaId, searchParams);
             var subAreas = await _unitOfWork.Repository<SubArea>().GetAllWithSpecAsync(spec);
-            return _mapper.Map<IReadOnlyList<SubAreaResponseDto>>(subAreas);
+
+            var subAreasDto = subAreas.Select(sa => _mapper.Map<SubAreaResponseDto>(sa)).ToList();
+            return ApiResponse<IReadOnlyList<SubAreaResponseDto>>.SuccessResponse(subAreasDto, "SubAreas retrieved successfully for the given MainArea.");
         }
 
-        public async Task<SubAreaResponseDto> CreateAsync(CreateSubAreaDto createDto)
+        public async Task<ApiResponse<SubAreaResponseDto>> CreateAsync(CreateSubAreaDto createDto)
         {
-            // Verify MainArea exists
             var mainArea = await _unitOfWork.Repository<MainArea>().GetByIdAsync(createDto.MainAreaId);
-            if (mainArea == null) throw new KeyNotFoundException($"MainArea with Id {createDto.MainAreaId} not found.");
+            if (mainArea == null)
+                return ApiResponse<SubAreaResponseDto>.ErrorResponse($"MainArea with Id {createDto.MainAreaId} not found.");
 
             var subArea = _mapper.Map<SubArea>(createDto);
             _unitOfWork.Repository<SubArea>().Add(subArea);
             await _unitOfWork.CompleteAsync();
 
-            // Return the created SubArea with MainArea name
-            var response = _mapper.Map<SubAreaResponseDto>(subArea);
-            response.MainAreaName = mainArea.Name;
-            return response;
+            var subAreaDto = _mapper.Map<SubAreaResponseDto>(subArea);
+            subAreaDto.MainAreaName = mainArea.Name;
+
+            return ApiResponse<SubAreaResponseDto>.SuccessResponse(subAreaDto, "SubArea created successfully.");
         }
 
-        public async Task<SubAreaResponseDto> UpdateAsync(UpdateSubAreaDto updateDto)
+        public async Task<ApiResponse<SubAreaResponseDto>> UpdateAsync(UpdateSubAreaDto updateDto)
         {
             var subArea = await _unitOfWork.Repository<SubArea>().GetByIdAsync(updateDto.Id);
-            if (subArea == null) throw new KeyNotFoundException($"SubArea with Id {updateDto.Id} not found.");
+            if (subArea == null)
+                return ApiResponse<SubAreaResponseDto>.ErrorResponse($"SubArea with Id {updateDto.Id} not found.");
 
-            // Verify MainArea exists if changing MainArea
             if (subArea.MainAreaId != updateDto.MainAreaId)
             {
                 var mainArea = await _unitOfWork.Repository<MainArea>().GetByIdAsync(updateDto.MainAreaId);
-                if (mainArea == null) throw new KeyNotFoundException($"MainArea with Id {updateDto.MainAreaId} not found.");
+                if (mainArea == null)
+                    return ApiResponse<SubAreaResponseDto>.ErrorResponse($"MainArea with Id {updateDto.MainAreaId} not found.");
             }
 
             _mapper.Map(updateDto, subArea);
@@ -80,19 +89,22 @@ namespace PowerStore.Service.SubAreaServices
             _unitOfWork.Repository<SubArea>().Update(subArea);
             await _unitOfWork.CompleteAsync();
 
-            // Get updated entity with MainArea included
             var updatedSubArea = await _unitOfWork.Repository<SubArea>().GetByIdWithSpecAsync(new SubAreaSpecs(subArea.Id));
-            return _mapper.Map<SubAreaResponseDto>(updatedSubArea);
+            var subAreaDto = _mapper.Map<SubAreaResponseDto>(updatedSubArea);
+
+            return ApiResponse<SubAreaResponseDto>.SuccessResponse(subAreaDto, "SubArea updated successfully.");
         }
 
-        public async Task<bool> SoftDeleteAsync(int id)
+        public async Task<ApiResponse<bool>> SoftDeleteAsync(int id)
         {
             var subArea = await _unitOfWork.Repository<SubArea>().GetByIdAsync(id);
-            if (subArea == null) throw new KeyNotFoundException($"SubArea with Id {id} not found.");
+            if (subArea == null)
+                return ApiResponse<bool>.ErrorResponse($"SubArea with Id {id} not found.");
 
             _unitOfWork.Repository<SubArea>().Delete(subArea);
             await _unitOfWork.CompleteAsync();
-            return true;
+
+            return ApiResponse<bool>.SuccessResponse(true, "SubArea deleted successfully.");
         }
     }
 }

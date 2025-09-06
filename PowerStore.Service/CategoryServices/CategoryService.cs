@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using PowerStore.Core;
 using PowerStore.Core.Contract;
+using PowerStore.Core.Contract.Responses;
 using PowerStore.Core.DTOs.CategoryDtos;
 using PowerStore.Core.Entities;
 using PowerStore.Core.EntitiesSpecifications;
 using PowerStore.Core.Specifications;
-using PowerStore.Core;
 
 namespace PowerStore.Service.CategoryServices
 {
@@ -24,54 +24,61 @@ namespace PowerStore.Service.CategoryServices
             _mapper = mapper;
         }
 
-        public async Task<CategoryResponseDto> GetByIdAsync(int id)
+        public async Task<ApiResponse<CategoryResponseDto>> GetByIdAsync(int id)
         {
             var spec = new CategorySpecs(id);
             var category = await _unitOfWork.Repository<Category>().GetByIdWithSpecAsync(spec);
 
-            if (category == null) throw new KeyNotFoundException($"Category with Id {id} not found.");
+            if (category == null)
+                return ApiResponse<CategoryResponseDto>.ErrorResponse($"Category with Id {id} not found.");
 
             var response = _mapper.Map<CategoryResponseDto>(category);
             response.ProductsCount = category.Products?.Count ?? 0;
-            return response;
+            return ApiResponse<CategoryResponseDto>.SuccessResponse(response, "Category retrieved successfully.");
         }
 
-        public async Task<CategoryWithProductsDto> GetByIdWithProductsAsync(int id)
+        public async Task<ApiResponse<CategoryWithProductsDto>> GetByIdWithProductsAsync(int id)
         {
             var spec = new CategorySpecs(id);
             var category = await _unitOfWork.Repository<Category>().GetByIdWithSpecAsync(spec);
 
-            if (category == null) throw new KeyNotFoundException($"Category with Id {id} not found.");
+            if (category == null)
+                return ApiResponse<CategoryWithProductsDto>.ErrorResponse($"Category with Id {id} not found.");
 
-            return _mapper.Map<CategoryWithProductsDto>(category);
+            var response = _mapper.Map<CategoryWithProductsDto>(category);
+            return ApiResponse<CategoryWithProductsDto>.SuccessResponse(response, "Category with products retrieved successfully.");
         }
 
-        public async Task<IReadOnlyList<CategoryResponseDto>> GetAllAsync(CategorySearchParams searchParams)
+        public async Task<ApiResponse<IReadOnlyList<CategoryResponseDto>>> GetAllAsync(CategorySearchParams searchParams)
         {
             var spec = new CategorySpecs(searchParams);
             var categories = await _unitOfWork.Repository<Category>().GetAllWithSpecAsync(spec);
 
-            return categories.Select(c =>
+            var response = categories.Select(c =>
             {
                 var dto = _mapper.Map<CategoryResponseDto>(c);
                 dto.ProductsCount = c.Products?.Count ?? 0;
                 return dto;
             }).ToList();
+
+            return ApiResponse<IReadOnlyList<CategoryResponseDto>>.SuccessResponse(response, "Categories retrieved successfully.");
         }
 
-        public async Task<CategoryResponseDto> CreateAsync(CreateCategoryDto createDto)
+        public async Task<ApiResponse<CategoryResponseDto>> CreateAsync(CreateCategoryDto createDto)
         {
             var category = _mapper.Map<Category>(createDto);
             _unitOfWork.Repository<Category>().Add(category);
             await _unitOfWork.CompleteAsync();
 
-            return _mapper.Map<CategoryResponseDto>(category);
+            var response = _mapper.Map<CategoryResponseDto>(category);
+            return ApiResponse<CategoryResponseDto>.SuccessResponse(response, "Category created successfully.");
         }
 
-        public async Task<CategoryResponseDto> UpdateAsync(UpdateCategoryDto updateDto)
+        public async Task<ApiResponse<CategoryResponseDto>> UpdateAsync(UpdateCategoryDto updateDto)
         {
             var category = await _unitOfWork.Repository<Category>().GetByIdAsync(updateDto.Id);
-            if (category == null) throw new KeyNotFoundException($"Category with Id {updateDto.Id} not found.");
+            if (category == null)
+                return ApiResponse<CategoryResponseDto>.ErrorResponse($"Category with Id {updateDto.Id} not found.");
 
             _mapper.Map(updateDto, category);
             category.UpdatedDate = DateTime.UtcNow;
@@ -79,31 +86,31 @@ namespace PowerStore.Service.CategoryServices
             _unitOfWork.Repository<Category>().Update(category);
             await _unitOfWork.CompleteAsync();
 
-            return _mapper.Map<CategoryResponseDto>(category);
+            var response = _mapper.Map<CategoryResponseDto>(category);
+            return ApiResponse<CategoryResponseDto>.SuccessResponse(response, "Category updated successfully.");
         }
 
-        public async Task<bool> SoftDeleteAsync(int id)
+        public async Task<ApiResponse<bool>> SoftDeleteAsync(int id)
         {
             var category = await _unitOfWork.Repository<Category>().GetByIdAsync(id);
-            if (category == null) throw new KeyNotFoundException($"Category with Id {id} not found.");
+            if (category == null)
+                return ApiResponse<bool>.ErrorResponse($"Category with Id {id} not found.");
 
-            // Check if category has products
             if (await HasProductsAsync(id))
-            {
-                throw new InvalidOperationException("Cannot delete category that has associated products.");
-            }
+                return ApiResponse<bool>.ErrorResponse("Cannot delete category that has associated products.");
 
             _unitOfWork.Repository<Category>().Delete(category);
             await _unitOfWork.CompleteAsync();
-            return true;
+
+            return ApiResponse<bool>.SuccessResponse(true, "Category deleted successfully.");
         }
 
         public async Task<bool> HasProductsAsync(int id)
         {
             var category = await _unitOfWork.Repository<Category>().GetByIdAsync(id);
-            if (category == null) return false;
+            if (category == null)
+                return false;
 
-            // Check if category has any non-deleted products
             var spec = new BaseSpecifications<Product>(p => p.CategoryId == id && !p.IsDeleted);
             var products = await _unitOfWork.Repository<Product>().GetAllWithSpecAsync(spec);
 

@@ -14,7 +14,7 @@ namespace PowerStore.Core.Contract.IdentityInterface
 {
     public interface IUserService
     {
-        Task< ApiResponse <ReturnUserDto>> GetByIdAsync(string id, UserType userType);
+        Task<ApiResponse<ReturnUserDto>> GetByIdAsync(string id, UserType userType);
         Task<ApiResponse<IReadOnlyList<ReturnUserDto>>> GetAllAsync(UserSearchParams searchParams);
         Task<ApiResponse<IReadOnlyList<ReturnUserDto>>> GetByTypeAsync(UserType userType, UserSearchParams searchParams);
         Task<ApiResponse<ReturnUserDto>> CreateAsync(AddUserDto createDto);
